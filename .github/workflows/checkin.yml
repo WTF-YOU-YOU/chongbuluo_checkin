@@ -37,3 +37,11 @@ jobs:
           CHECKIN_SELECTOR: ${{ secrets.CHECKIN_SELECTOR }}
           HEADLESS: 'true'
         run: python checkin.py
+
+      - name: Upload debug artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkin-debug
+          path: debug/
+          if-no-files-found: ignore
