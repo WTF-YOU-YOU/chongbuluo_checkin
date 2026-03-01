@@ -28,6 +28,14 @@ def parse_bool(value: str | None, default: bool = True) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "y", "on"}
 
 
+def env_or_default(key: str, default: str) -> str:
+    value = os.getenv(key)
+    if value is None:
+        return default
+    value = value.strip()
+    return value if value else default
+
+
 def load_config() -> Config:
     load_dotenv()
 
@@ -39,21 +47,21 @@ def load_config() -> Config:
     return Config(
         username=username,
         password=password,
-        login_url=os.getenv(
+        login_url=env_or_default(
             "LOGIN_URL",
             "https://www.chongbuluo.com/member.php?mod=logging&action=login",
-        ).strip(),
-        checkin_url=os.getenv("CHECKIN_URL", "https://www.chongbuluo.com").strip(),
-        username_selector=os.getenv("USERNAME_SELECTOR", "input[name='username']").strip(),
-        password_selector=os.getenv("PASSWORD_SELECTOR", "input[name='password']").strip(),
-        submit_selector=os.getenv(
+        ),
+        checkin_url=env_or_default("CHECKIN_URL", "https://www.chongbuluo.com"),
+        username_selector=env_or_default("USERNAME_SELECTOR", "input[name='username']"),
+        password_selector=env_or_default("PASSWORD_SELECTOR", "input[name='password']"),
+        submit_selector=env_or_default(
             "SUBMIT_SELECTOR",
             "button[type='submit'], input[type='submit']",
-        ).strip(),
-        checkin_selector=os.getenv(
+        ),
+        checkin_selector=env_or_default(
             "CHECKIN_SELECTOR",
             "a[href*='qiandao'], a[href*='sign'], button:has-text('签到'), a:has-text('签到')",
-        ).strip(),
+        ),
         headless=parse_bool(os.getenv("HEADLESS"), default=True),
     )
 
